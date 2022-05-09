@@ -19,6 +19,8 @@ namespace wavefront {
 }
 
 namespace wavefront {
+    using std::ifstream;
+
     Model::Model() {}
 
     Model::~Model() {
@@ -36,8 +38,8 @@ namespace wavefront {
         materials.clear();
     }
 
-    void Model::loadMaterialsFrom(const std::string & path) {
-        std::ifstream is(path);
+    void Model::loadMaterialsFrom(const string & path) {
+        ifstream is(path);
         if (!is.is_open()) {
             throw ModelLoadException("Failed to open file " + path);
         }
@@ -113,7 +115,7 @@ namespace wavefront {
                     if (token.key.size() < 5 || token.key.substr(0, 4) != "map_")
                         break;
                     auto lastSlash = path.find_last_of('/');
-                    std::string texPath = path.substr(0, lastSlash + 1);
+                    string texPath = path.substr(0, lastSlash + 1);
                     switch (token.key[4]) {
                         case 'K': {
                             if (token.key == "map_Kd") {
@@ -140,16 +142,16 @@ namespace wavefront {
         }
     }
 
-    void Model::loadModelFrom(const std::string & path) {
-        std::ifstream is(path);
+    void Model::loadModelFrom(const string & path) {
+        ifstream is(path);
         if (!is.is_open()) {
             throw ModelLoadException("Failed to open file " + path);
         }
         Parser parser(is);
 
-        std::vector<glm::vec3> av;
-        std::vector<glm::vec2> avt;
-        std::vector<glm::vec3> avn;
+        vector<vec3> av;
+        vector<vec2> avt;
+        vector<vec3> avn;
 
         Mesh * mesh = nullptr;
 
@@ -230,7 +232,7 @@ namespace wavefront {
                     if (token.key != "mtllib")
                         break;
                     auto lastSlash = path.find_last_of('/');
-                    std::string mtlPath = path.substr(0, lastSlash + 1);
+                    string mtlPath = path.substr(0, lastSlash + 1);
                     mtlPath += token.value;
                     loadMaterialsFrom(mtlPath);
                 } break;

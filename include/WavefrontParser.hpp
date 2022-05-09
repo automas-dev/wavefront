@@ -6,6 +6,10 @@
 #include <vector>
 
 namespace wavefront {
+    using std::istream;
+    using std::string;
+    using std::vector;
+
     /**
      * Split a string based on a delimeter.
      *
@@ -14,7 +18,7 @@ namespace wavefront {
      *
      * @return a vector of strings
      */
-    std::vector<std::string> splitString(const std::string & str, char delim);
+    vector<string> splitString(const string & str, char delim);
 
     /**
      * Parser for Wavefront formatted .obj and .mtl files.
@@ -26,16 +30,16 @@ namespace wavefront {
          */
         struct Token {
             /// The token command / key
-            std::string key;
+            string key;
             /// Everything after the first space
-            std::string value;
+            string value;
 
             /**
              * Split value on spaces and return the results.
              *
              * @return value split by spaces
              */
-            std::vector<std::string> params() const;
+            vector<string> params() const;
         };
 
         struct iterator {
@@ -84,7 +88,7 @@ namespace wavefront {
         };
 
     private:
-        std::istream & is;
+        istream & is;
 
     public:
         /**
@@ -92,7 +96,7 @@ namespace wavefront {
          *
          * @param is the input stream to read from
          */
-        Parser(std::istream & is);
+        Parser(istream & is);
 
         /**
          * Return true if the last read was successful.

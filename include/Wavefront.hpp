@@ -6,12 +6,17 @@
 #include <vector>
 
 namespace wavefront {
+    using std::string;
+    using std::vector;
+    using glm::vec2;
+    using glm::vec3;
+
     struct Mesh {
-        std::string name;
+        string name;
         size_t matId;
-        std::vector<glm::vec3> vertices;
-        std::vector<glm::vec2> texcoords;
-        std::vector<glm::vec3> normals;
+        vector<vec3> vertices;
+        vector<vec2> texcoords;
+        vector<vec3> normals;
 
         Mesh();
 
@@ -24,15 +29,15 @@ namespace wavefront {
     };
 
     struct Material {
-        std::string name;
+        string name;
         float specExp;
         float alpha;
-        glm::vec3 colAmbient;
-        glm::vec3 colDiffuse;
-        glm::vec3 colSpecular;
-        std::string texAlbedo;
-        std::string texNormal;
-        std::string texSpecular;
+        vec3 colAmbient;
+        vec3 colDiffuse;
+        vec3 colSpecular;
+        string texAlbedo;
+        string texNormal;
+        string texSpecular;
         Material();
     };
 
@@ -42,8 +47,8 @@ namespace wavefront {
     };
 
     struct Model {
-        std::vector<Mesh *> objects;
-        std::vector<Material *> materials;
+        vector<Mesh *> objects;
+        vector<Material *> materials;
 
         Model();
         ~Model();
@@ -58,8 +63,8 @@ namespace wavefront {
 
         void clear();
 
-        void loadMaterialsFrom(const std::string & path);
+        void loadMaterialsFrom(const string & path);
 
-        void loadModelFrom(const std::string & path);
+        void loadModelFrom(const string & path);
     };
 }
