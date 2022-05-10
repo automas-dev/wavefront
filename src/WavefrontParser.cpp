@@ -5,13 +5,28 @@
 namespace wavefront {
     using std::stringstream;
 
-    vector<string> splitString(const string & str, char delim) {
+    vector<string> splitString(const string & str, char delim, size_t maxcount) {
         vector<string> parts;
-        stringstream ss(str);
-        string part;
-        for (; std::getline(ss, part, delim);) {
-            parts.push_back(part);
+
+        size_t start = 0, end = 0;
+        while (end < str.size() && (maxcount-- > 0)) {
+            while (end < str.size()) {
+                if (str[end] == delim) {
+                    parts.push_back(str.substr(start, end-start));
+                    start = ++end;
+                    break;
+                }
+                else
+                    ++end;
+            }
         }
+
+        if (parts.empty())
+            parts.push_back(str);
+
+        else if (start <= str.size())
+            parts.push_back(str.substr(start));
+
         return parts;
     }
 }
@@ -36,6 +51,7 @@ namespace wavefront {
             auto split = line.find_first_of(' ');
             if (split == string::npos) {
                 token.key = line;
+                token.value.clear();
             }
             else {
                 token.key = line.substr(0, split);

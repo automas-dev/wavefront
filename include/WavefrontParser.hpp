@@ -15,10 +15,11 @@ namespace wavefront {
      *
      * @param str the string to split
      * @param delim the delimiter
+     * @param maxcount the maximum number of splits
      *
      * @return a vector of strings
      */
-    vector<string> splitString(const string & str, char delim);
+    vector<string> splitString(const string & str, char delim, size_t maxcount = -1);
 
     /**
      * Parser for Wavefront formatted .obj and .mtl files.
@@ -83,7 +84,7 @@ namespace wavefront {
             }
 
         private:
-            mutable Parser::Token token;
+            mutable Token token;
             Parser * parser;
         };
 
