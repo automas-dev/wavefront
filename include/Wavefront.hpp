@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -8,6 +9,7 @@
 namespace wavefront {
     using std::string;
     using std::vector;
+    using std::shared_ptr;
     using glm::vec2;
     using glm::vec3;
 
@@ -47,8 +49,8 @@ namespace wavefront {
     };
 
     struct Model {
-        vector<Mesh *> objects;
-        vector<Material *> materials;
+        vector<shared_ptr<Mesh>> objects;
+        vector<shared_ptr<Material>> materials;
 
         Model();
         ~Model();

@@ -20,6 +20,7 @@ namespace wavefront {
 
 namespace wavefront {
     using std::ifstream;
+    using std::make_shared;
 
     Model::Model() {}
 
@@ -28,13 +29,7 @@ namespace wavefront {
     }
 
     void Model::clear() {
-        for (auto * ptr : objects) {
-            delete ptr;
-        }
         objects.clear();
-        for (auto * ptr : materials) {
-            delete ptr;
-        }
         materials.clear();
     }
 
@@ -45,14 +40,14 @@ namespace wavefront {
         }
         Parser parser(is);
 
-        Material * material = nullptr;
+        shared_ptr<Material> material = nullptr;
 
         for (auto & token : parser) {
             switch (token.key[0]) {
                 case 'n': { // newmtl
                     if (token.key != "newmtl")
                         break;
-                    material = new Material();
+                    material = make_shared<Material>();
                     material->name = token.value;
                     materials.push_back(material);
                 } break;
@@ -153,12 +148,12 @@ namespace wavefront {
         vector<vec2> avt;
         vector<vec3> avn;
 
-        Mesh * mesh = nullptr;
+        shared_ptr<Mesh> mesh = nullptr;
 
         for (auto & token : parser) {
             switch (token.key[0]) {
                 case 'o': {
-                    mesh = new Mesh();
+                    mesh = make_shared<Mesh>();
                     mesh->name = token.value;
                     objects.push_back(mesh);
                 } break;
