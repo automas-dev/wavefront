@@ -195,7 +195,7 @@ namespace wavefront {
                 case 'f': {
                     if (!mesh)
                         throw ModelLoadException(
-                            "Got a face (f) before starign an object (o)");
+                            "Got a face (f) before starting an object (o)");
                     auto params = token.params();
                     if (params.size() != 3)
                         throw ModelLoadException("Face (f) must have 3 components");
@@ -236,7 +236,7 @@ namespace wavefront {
                         break;
                     if (!mesh)
                         throw ModelLoadException(
-                            "Got a (usemtl) before starign an object (o)");
+                            "Got a (usemtl) before starting an object (o)");
                     bool found = false;
                     for (int i = 0; i < materials.size(); i++) {
                         if (materials[i]->name == token.value) {
