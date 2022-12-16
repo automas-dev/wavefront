@@ -5,6 +5,8 @@ project(Wavefront
     DESCRIPTION "A Wavefront OBJ and MTL Parser"
     LANGUAGES CXX)
 
+option(WAVEFRONT_BUILD_DOCS "Builds the Wavefront documentation" ON)
+
 # Only if this is the top level project (not included with add_subdirectory)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Use -std=c++xx instead of -std=g++xx
@@ -15,14 +17,16 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     # Testing only available for top level projects. It calls enable_testing
     # which must be in the main CMakeLists.
-    include(CTest)
+    # include(CTest)
 
-    # Generate documentation using Doxygen
-    find_package(Doxygen)
-    if(Doxygen_FOUND)
-        add_subdirectory(docs)
-    else()
-        message(STATUS "Doxygen not found, not building docs")
+    if(WAVEFRONT_BUILD_DOCS)
+        # Generate documentation using Doxygen
+        find_package(Doxygen)
+        if(Doxygen_FOUND)
+            add_subdirectory(docs)
+        else()
+            message(STATUS "Doxygen not found, not building docs")
+        endif()
     endif()
 endif()
 
