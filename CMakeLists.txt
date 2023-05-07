@@ -6,6 +6,7 @@ project(Wavefront
     LANGUAGES CXX)
 
 option(WAVEFRONT_BUILD_DOCS "Builds the Wavefront documentation" ON)
+option(WAVEFRONT_BUILD_TESTS "Builds the Wavefront tests" ON)
 
 # Only if this is the top level project (not included with add_subdirectory)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -17,11 +18,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     # Testing only available for top level projects. It calls enable_testing
     # which must be in the main CMakeLists.
-    # include(CTest)
+    include(CTest)
 
     if(WAVEFRONT_BUILD_DOCS)
         # Generate documentation using Doxygen
         find_package(Doxygen)
+
         if(Doxygen_FOUND)
             add_subdirectory(docs)
         else()
@@ -39,15 +41,18 @@ include_directories(PRIVATE ${CMAKE_BINARY_DIR}/include)
 
 find_package(glm REQUIRED CONFIG)
 
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        release-1.11.0
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+if(WAVEFRONT_BUILD_TESTS)
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.11.0
+    )
+
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+endif()
 
 add_subdirectory(src)
 
@@ -74,6 +79,6 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 # Add tests
-if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING) AND BUILD_TESTING)
-   add_subdirectory(tests)
+if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING) AND WAVEFRONT_BUILD_TESTS)
+    add_subdirectory(tests)
 endif()
