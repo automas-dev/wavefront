@@ -109,23 +109,18 @@ namespace wavefront {
                 case 'm': {
                     if (token.key.size() < 5 || token.key.substr(0, 4) != "map_")
                         break;
-                    auto lastSlash = path.find_last_of('/');
-                    string texPath = path.substr(0, lastSlash + 1);
                     switch (token.key[4]) {
                         case 'K': {
                             if (token.key == "map_Kd") {
-                                texPath += token.value;
-                                material->texAlbedo = texPath;
+                                material->texAlbedo = token.value;
                             }
                             else if (token.key == "map_Ks") {
-                                texPath += token.value;
-                                material->texSpecular = texPath;
+                                material->texSpecular = token.value;
                             }
                         } break;
                         case 'B': // map_Bump
                         case 'b': { // map_bump
-                            texPath += token.value;
-                            material->texNormal = texPath;
+                            material->texNormal = token.value;
                         } break;
                         default:
                             break;
