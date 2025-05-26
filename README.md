@@ -5,7 +5,7 @@ A Wavefront OBJ and MTL Parser.
 ## Building
 
 ```sh
-git clone https://github.com/twh2898/wavefront.git
+git clone https://github.com/automas-dev/wavefront.git
 cd wavefront
 mkdir build
 cd build
@@ -23,7 +23,7 @@ make install
 ## CMake Submodule
 
 ```sh
-git submodule add https://github.com/twh2898/wavefront.git
+git submodule add https://github.com/automas-dev/wavefront.git
 git submodule update --init --recursive
 ```
 
@@ -37,7 +37,7 @@ add_subdirectory(Wavefront EXCLUDE_FROM_ALL)
 include(FetchContent)
 FetchContent_Declare(
     glpp
-    GIT_REPOSITORY https://github.com/twh2898/wavefront.git
+    GIT_REPOSITORY https://github.com/automas-dev/wavefront.git
     GIT_TAG        0.1.0
 )
 FetchContent_MakeAvailable(glpp)
