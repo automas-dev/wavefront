@@ -64,7 +64,7 @@ jobs:
     secrets: inherit
 
     needs:
-      # - test
+      - test
       - lint
 
     permissions:
