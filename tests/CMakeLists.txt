@@ -1,14 +1,15 @@
+set(TARGET tests)
 
 enable_testing()
-
-set(TARGET tests)
 
 add_executable(${TARGET}
   parser_tests.cpp
 )
-target_link_libraries(${TARGET}
-  gtest_main
-  Wavefront
+target_link_libraries(${TARGET} PRIVATE gtest gtest_main Wavefront)
+
+add_test(
+  NAME ${TARGET}
+  COMMAND $<TARGET_FILE:${TARGET}>
 )
 
 include(GoogleTest)

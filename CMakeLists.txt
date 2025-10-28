@@ -16,9 +16,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Support folders in IDEs
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-    # Testing only available for top level projects. It calls enable_testing
-    # which must be in the main CMakeLists.
-    include(CTest)
+    if(WAVEFRONT_BUILD_TESTS)
+        # Testing only available for top level projects. It calls enable_testing
+        # which must be in the main CMakeLists.
+        include(CTest)
+    endif()
 
     if(WAVEFRONT_BUILD_DOCS)
         # Generate documentation using Doxygen
@@ -36,23 +38,10 @@ endif()
 include(GNUInstallDirs)
 
 # Create config.h with project version numbers
-configure_File(cmake/config.h.in include/config.h)
+configure_file(cmake/config.h.in include/config.h)
 include_directories(PRIVATE ${CMAKE_BINARY_DIR}/include)
 
-find_package(glm REQUIRED CONFIG)
-
-if(WAVEFRONT_BUILD_TESTS)
-    include(FetchContent)
-    FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.11.0
-    )
-
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-endif()
+add_subdirectory(external)
 
 add_subdirectory(src)
 
