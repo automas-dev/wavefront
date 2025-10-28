@@ -118,7 +118,7 @@ namespace wavefront {
                                 material->texSpecular = token.value;
                             }
                         } break;
-                        case 'B': // map_Bump
+                        case 'B':   // map_Bump
                         case 'b': { // map_bump
                             material->texNormal = token.value;
                         } break;
