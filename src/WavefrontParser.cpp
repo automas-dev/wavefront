@@ -12,7 +12,7 @@ namespace wavefront {
         while (end < str.size() && (maxcount-- > 0)) {
             while (end < str.size()) {
                 if (str[end] == delim) {
-                    parts.push_back(str.substr(start, end-start));
+                    parts.push_back(str.substr(start, end - start));
                     start = ++end;
                     break;
                 }
