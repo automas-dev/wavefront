@@ -1,31 +1,24 @@
 
-CC=/usr/bin/gcc
-CXX=/usr/bin/g++
 CONFIG=Debug
-TARGET=all
 
-all: config build
+all: setup build
 
-config:
-	cmake --no-warn-unused-cli \
-		-DCMAKE_BUILD_TYPE=${CONFIG} \
-		-DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE \
-		-DCMAKE_C_COMPILER=${CC} \
-		-DCMAKE_CXX_COMPILER=${CXX} \
-		-S${PWD} \
-		-B${PWD}/build \
-		-G Ninja
+setup:
+	cmake -S . -B build -DCMAKE_BUILD_TYPE=${CONFIG}
 
 build:
-	cmake --build ${PWD}/build --config ${CONFIG} --target ${TARGET}
+	cmake --build build --config ${CONFIG}
 
 install:
-	cmake --install ${PWD}/build --config ${CONFIG}
+	cmake --install build --config ${CONFIG}
 
 lint:
-	@find src include tests -name '*.c' -or -name '*.h' -or -name '*.cpp' -or -name '*.hpp' | xargs clang-format --dry-run --Werror --sort-includes
+	@find src include tests -name '*.cpp' -or -name '*.hpp' | xargs clang-format --dry-run --Werror --sort-includes
 
 format:
-	@find src include tests -name '*.c' -or -name '*.h' -or -name '*.cpp' -or -name '*.hpp' | xargs clang-format -i --Werror --sort-includes
+	@find src include tests -name '*.cpp' -or -name '*.hpp' | xargs clang-format -i --Werror --sort-includes
 
-.PHONY: config build install lint format
+test: build
+	cd build && GTEST_COLOR=1 ctest --output-on-failure
+
+.PHONY: setup build install lint format test
