@@ -21,4 +21,7 @@ format:
 test: build
 	cd build && GTEST_COLOR=1 ctest --output-on-failure
 
-.PHONY: setup build install lint format test
+test-ci: build
+	cd build && GTEST_COLOR=1 ctest -V
+
+.PHONY: setup build install lint format test test-ci
