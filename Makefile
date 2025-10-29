@@ -24,4 +24,20 @@ test: build
 test-ci: build
 	cd build && GTEST_COLOR=1 ctest -V
 
-.PHONY: setup build install lint format test test-ci
+test-cov: test coverage
+
+coverage:
+	@mkdir -p build/coverage
+	gcovr --txt \
+		--html build/coverage/index.html \
+		--html-details \
+		--html-theme github.dark-green \
+		--html-high-threshold 100 \
+		--html-medium-threshold 90 \
+		--fail-under-line 100 \
+		--fail-under-branch 100 \
+		--lcov build/coverage.lcov \
+		-e build \
+		-e tests
+
+.PHONY: setup build install lint format test test-ci test-cov coverage

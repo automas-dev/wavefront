@@ -8,6 +8,10 @@ project(Wavefront
 option(WAVEFRONT_BUILD_DOCS "Builds the Wavefront documentation" ON)
 option(WAVEFRONT_BUILD_TESTS "Builds the Wavefront tests" ON)
 
+option(WAVEFRONT_TEST_COVERAGE "Generate gcov target for calculating code coverage" ON)
+option(WAVEFRONT_TEST_COVERAGE_CAN_FAIL "Tests can fail for coverage" ON)
+option(WAVEFRONT_TEST_COVERAGE_DARK "Use dark theme for html output" ON)
+
 # Only if this is the top level project (not included with add_subdirectory)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Use -std=c++xx instead of -std=g++xx
@@ -17,6 +21,19 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
     if(WAVEFRONT_BUILD_TESTS)
+        set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+        if(WAVEFRONT_TEST_COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
+            include(CodeCoverage)
+            append_coverage_compiler_flags()
+            if(WAVEFRONT_TEST_COVERAGE_CAN_FAIL)
+                set(GCOVR_ADDITIONAL_ARGS ${GCOVR_ADDITIONAL_ARGS} --html-high-threshold 100 --html-medium-threshold 90 --fail-under-line 100 --fail-under-branch 100)
+            endif()
+            if(WAVEFRONT_TEST_COVERAGE_DARK)
+                set(GCOVR_ADDITIONAL_ARGS ${GCOVR_ADDITIONAL_ARGS} --html-theme github.dark-green)
+            else()
+                set(GCOVR_ADDITIONAL_ARGS ${GCOVR_ADDITIONAL_ARGS} --html-theme github.green)
+            endif()
+        endif()
         # Testing only available for top level projects. It calls enable_testing
         # which must be in the main CMakeLists.
         include(CTest)
@@ -70,4 +87,15 @@ install(FILES
 # Add tests
 if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING) AND WAVEFRONT_BUILD_TESTS)
     add_subdirectory(tests)
+endif()
+
+if(WAVEFRONT_TEST_COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
+    setup_target_for_coverage_gcovr_html(
+        NAME ${PROJECT_NAME}_coverage
+        EXECUTABLE ctest
+        EXECUTABLE_ARGS --output-on-failure
+        DEPENDENCIES ${PROJECT_NAME}
+        BASE_DIRECTORY .
+        EXCLUDE ${PROJECT_SOURCE_DIR}/tests ${PROJECT_BINARY_DIR}/*
+    )
 endif()
