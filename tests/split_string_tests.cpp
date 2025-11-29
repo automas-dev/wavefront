@@ -3,8 +3,8 @@
 #include <string>
 using namespace std;
 
-#include <wavefront/Parser.hpp>
 #include <sstream>
+#include <wavefront/Parser.hpp>
 
 TEST(StreamTest, DoesItEnd) {
     std::stringstream s("a");
