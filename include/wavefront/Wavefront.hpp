@@ -22,7 +22,7 @@ namespace wavefront {
         using ConstPtr = const shared_ptr<Mesh>;
 
         string name;
-        size_t matId;
+        int matId;
         vector<vec3> vertices;
         vector<vec2> texcoords;
         vector<vec3> normals;

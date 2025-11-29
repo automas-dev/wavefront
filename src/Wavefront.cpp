@@ -7,7 +7,7 @@
 #include "wavefront/Parser.hpp"
 
 namespace wavefront {
-    Mesh::Mesh() : matId(0) {}
+    Mesh::Mesh() : matId(-1) {}
 
     size_t Mesh::size() const {
         return vertices.size();
