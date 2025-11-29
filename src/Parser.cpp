@@ -1,4 +1,4 @@
-#include "WavefrontParser.hpp"
+#include "wavefront/Parser.hpp"
 
 #include <algorithm>
 #include <sstream>

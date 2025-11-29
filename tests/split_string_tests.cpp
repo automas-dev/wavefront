@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-#include <WavefrontParser.hpp>
+#include <wavefront/Parser.hpp>
 #include <sstream>
 
 TEST(StreamTest, DoesItEnd) {

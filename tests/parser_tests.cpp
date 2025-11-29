@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-#include <WavefrontParser.hpp>
+#include <wavefront/Parser.hpp>
 
 TEST(ParserTest, TwoLines) {
     istringstream is("one\ntwo");
