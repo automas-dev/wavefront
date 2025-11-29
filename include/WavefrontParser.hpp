@@ -19,7 +19,28 @@ namespace wavefront {
      *
      * @return a vector of strings
      */
-    vector<string> splitString(const string & str, char delim, size_t maxcount = -1);
+    vector<string> splitString(const string & str, char delim, int maxcount = -1);
+
+    /**
+     * Split a string based on whitespace.
+     *
+     * Sequential whitespace will be combined int a single delimiter.
+     *
+     * @param str the string to split
+     * @param maxcount the maximum number of splits
+     *
+     * @return a vector of strings
+     */
+    vector<string> splitStringSpace(const string & str, int maxcount = -1);
+
+    /**
+     * @brief Return str with any leading or trailing whitespace removed
+     *
+     * Whitespace is defined by std::isspace
+     *
+     * @param str string to trim
+     */
+    void trimString(string & str);
 
     /**
      * Parser for Wavefront formatted .obj and .mtl files.
@@ -52,7 +73,11 @@ namespace wavefront {
 
             iterator() : parser(nullptr) {}
 
-            iterator(Parser * parser) : parser(parser) {}
+            iterator(Parser * parser) : parser(parser) {
+                if (parser) {
+                    parser->read(token);
+                }
+            }
 
             reference operator*() const {
                 return token;
@@ -90,6 +115,7 @@ namespace wavefront {
 
     private:
         istream & is;
+        string line;
 
     public:
         /**
@@ -105,6 +131,14 @@ namespace wavefront {
          * @return was the read successful
          */
         explicit operator bool() const;
+
+        /**
+         * @brief Are there more tokens to read
+         *
+         * @return true the next call to read will return a token
+         * @return false the next call to read will throw an exception
+         */
+        bool hasNext();
 
         /**
          * Read the next token into token.
@@ -125,6 +159,9 @@ namespace wavefront {
          *
          * @return an iterator to the end of all tokens
          */
-        iterator end();
+        static iterator end();
+
+    private:
+        void findNext();
     };
 }

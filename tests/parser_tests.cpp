@@ -5,73 +5,103 @@ using namespace std;
 
 #include <WavefrontParser.hpp>
 
-TEST(SplitStringTest, EmptyString) {
-    auto split = wavefront::splitString("", ',');
-    EXPECT_EQ(1, split.size());
-    EXPECT_EQ("", split[0]);
+TEST(ParserTest, TwoLines) {
+    istringstream is("one\ntwo");
+    auto parser = wavefront::Parser(is);
+    wavefront::Parser::Token token;
+    parser.read(token);
+    EXPECT_EQ("one", token.key);
+    parser.read(token);
+    EXPECT_EQ("two", token.key);
+    EXPECT_FALSE(parser.hasNext());
 }
 
-TEST(SplitStringTest, NoDelimiter) {
-    auto split = wavefront::splitString("foo", ',');
-    EXPECT_EQ(1, split.size());
-    EXPECT_EQ("foo", split[0]);
+TEST(ParserTest, Space) {
+    istringstream is("one two");
+    auto parser = wavefront::Parser(is);
+    wavefront::Parser::Token token;
+    parser.read(token);
+    EXPECT_EQ("one", token.key);
+    auto p = token.params();
+    ASSERT_EQ(1, p.size());
+    EXPECT_EQ("two", p[0]);
+    EXPECT_FALSE(parser.hasNext());
 }
 
-TEST(SplitStringTest, SingleDelimiter) {
-    auto split = wavefront::splitString("foo,bar", ',');
-    EXPECT_EQ(2, split.size());
-    EXPECT_EQ("foo", split[0]);
-    EXPECT_EQ("bar", split[1]);
+TEST(ParserTest, MultipleSpaces) {
+    istringstream is("one  two");
+    auto parser = wavefront::Parser(is);
+    wavefront::Parser::Token token;
+    parser.read(token);
+    EXPECT_EQ("one", token.key);
+    auto p = token.params();
+    ASSERT_EQ(1, p.size());
+    EXPECT_EQ("two", p[0]);
+    EXPECT_FALSE(parser.hasNext());
 }
 
-TEST(SplitStringTest, EmptyElements) {
-    auto split = wavefront::splitString(",", ',');
-    EXPECT_EQ(2, split.size());
-    EXPECT_EQ("", split[0]);
-    EXPECT_EQ("", split[1]);
+TEST(ParserTest, TrailingSpace) {
+    istringstream is("one two ");
+    auto parser = wavefront::Parser(is);
+    wavefront::Parser::Token token;
+    parser.read(token);
+    EXPECT_EQ("one", token.key);
+    auto p = token.params();
+    ASSERT_EQ(1, p.size());
+    EXPECT_EQ("two", p[0]);
+    EXPECT_FALSE(parser.hasNext());
 }
 
-TEST(SplitStringTest, StartEmptyElements) {
-    auto split = wavefront::splitString(",bar", ',');
-    EXPECT_EQ(2, split.size());
-    EXPECT_EQ("", split[0]);
-    EXPECT_EQ("bar", split[1]);
+TEST(ParserTest, Comment) {
+    istringstream is("#one");
+    auto parser = wavefront::Parser(is);
+    wavefront::Parser::Token token;
+    parser.read(token);
+    EXPECT_EQ("", token.key);
+    EXPECT_FALSE(parser.hasNext());
 }
 
-TEST(SplitStringTest, EndEmptyElements) {
-    auto split = wavefront::splitString("foo,", ',');
-    EXPECT_EQ(2, split.size());
-    EXPECT_EQ("foo", split[0]);
-    EXPECT_EQ("", split[1]);
+TEST(ParserTest, TrailingComment) {
+    istringstream is("one # two");
+    auto parser = wavefront::Parser(is);
+    wavefront::Parser::Token token;
+    parser.read(token);
+    EXPECT_EQ("one", token.key);
+    EXPECT_FALSE(parser.hasNext());
 }
 
-TEST(SplitStringTest, MultipleEmptyElements) {
-    auto split = wavefront::splitString("foo,,bar", ',');
-    EXPECT_EQ(3, split.size());
-    EXPECT_EQ("foo", split[0]);
-    EXPECT_EQ("", split[1]);
-    EXPECT_EQ("bar", split[2]);
+TEST(ParserTest, HasNext) {
+    istringstream is("one\ntwo");
+    auto parser = wavefront::Parser(is);
+    wavefront::Parser::Token token;
+    ASSERT_TRUE(parser.hasNext());
+    parser.read(token);
+    EXPECT_EQ("one", token.key);
+    ASSERT_TRUE(parser.hasNext());
+    parser.read(token);
+    EXPECT_EQ("two", token.key);
+    EXPECT_FALSE(parser.hasNext());
 }
 
-TEST(SplitStringTest, StartMultipleEmptyElements) {
-    auto split = wavefront::splitString(",,bar", ',');
-    EXPECT_EQ(3, split.size());
-    EXPECT_EQ("", split[0]);
-    EXPECT_EQ("", split[1]);
-    EXPECT_EQ("bar", split[2]);
+TEST(ParserTest, EOFHasNext) {
+    istringstream is("");
+    is.get();
+    ASSERT_FALSE(is);
+    auto parser = wavefront::Parser(is);
+    ASSERT_FALSE(parser.hasNext());
 }
 
-TEST(SplitStringTest, EndMultipleEmptyElements) {
-    auto split = wavefront::splitString("foo,,", ',');
-    EXPECT_EQ(3, split.size());
-    EXPECT_EQ("foo", split[0]);
-    EXPECT_EQ("", split[1]);
-    EXPECT_EQ("", split[2]);
+TEST(ParserTest, EmptyStream) {
+    istringstream is("");
+    EXPECT_EQ(-1, is.peek());
 }
 
-TEST(SplitStringTest, MaxCount) {
-    auto split = wavefront::splitString("a,b,c", ',', 1);
-    EXPECT_EQ(2, split.size());
-    EXPECT_EQ("a", split[0]);
-    EXPECT_EQ("b,c", split[1]);
+TEST(ParserTest, End) {
+    istringstream is("a");
+    char c;
+    is >> c;
+    EXPECT_FALSE(is.eof());
+    EXPECT_EQ('a', c);
+    is >> c;
+    EXPECT_TRUE(is.eof());
 }
