@@ -27,17 +27,9 @@ test-ci: build
 test-cov: test coverage
 
 coverage:
-	@mkdir -p build/coverage
-	gcovr --txt \
-		--html build/coverage/index.html \
-		--html-details \
-		--html-theme github.dark-green \
-		--html-high-threshold 100 \
-		--html-medium-threshold 90 \
-		--fail-under-line 100 \
-		--fail-under-branch 100 \
-		--lcov build/coverage.lcov \
-		-e build \
-		-e tests
+	cmake --build build --target Wavefront_coverage
+
+show_coverage:
+	gio open build/Wavefront_coverage/index.html
 
 .PHONY: setup build install lint format test test-ci test-cov coverage
