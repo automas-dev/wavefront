@@ -1,11 +1,8 @@
 
 set(TARGET Wavefront)
 
-set(HEADER_LIST Wavefront.hpp WavefrontParser.hpp)
-list(TRANSFORM HEADER_LIST PREPEND "${${PROJECT_NAME}_SOURCE_DIR}/include/")
-
-set(SOURCE_LIST Wavefront.cpp WavefrontParser.cpp)
-list(TRANSFORM SOURCE_LIST PREPEND "${${PROJECT_NAME}_SOURCE_DIR}/src/")
+file(GLOB_RECURSE HEADER_LIST "${${PROJECT_NAME}_SOURCE_DIR}/include/*.hpp")
+file(GLOB_RECURSE SOURCE_LIST ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 add_library(${TARGET} ${SOURCE_LIST} ${HEADER_LIST})
 

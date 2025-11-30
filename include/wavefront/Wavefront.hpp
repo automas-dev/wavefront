@@ -1,21 +1,28 @@
 #pragma once
 
+#include <filesystem>
 #include <glm/glm.hpp>
+#include <istream>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace wavefront {
-    using std::string;
-    using std::vector;
-    using std::shared_ptr;
     using glm::vec2;
     using glm::vec3;
+    using std::istream;
+    using std::shared_ptr;
+    using std::string;
+    using std::vector;
+    namespace fs = std::filesystem;
 
     struct Mesh {
+        using Ptr = shared_ptr<Mesh>;
+        using ConstPtr = const shared_ptr<Mesh>;
+
         string name;
-        size_t matId;
+        int matId;
         vector<vec3> vertices;
         vector<vec2> texcoords;
         vector<vec3> normals;
@@ -31,6 +38,9 @@ namespace wavefront {
     };
 
     struct Material {
+        using Ptr = shared_ptr<Material>;
+        using ConstPtr = const shared_ptr<Material>;
+
         string name;
         float specExp;
         float alpha;
@@ -40,7 +50,10 @@ namespace wavefront {
         string texAlbedo;
         string texNormal;
         string texSpecular;
+
         Material();
+        static vector<Ptr> fromFile(const fs::path & path);
+        static vector<Ptr> fromStream(istream & is);
     };
 
     class ModelLoadException : public std::runtime_error {
@@ -49,11 +62,13 @@ namespace wavefront {
     };
 
     struct Model {
-        vector<shared_ptr<Mesh>> objects;
-        vector<shared_ptr<Material>> materials;
+        using Ptr = shared_ptr<Model>;
+        using ConstPtr = const shared_ptr<Model>;
+
+        vector<Mesh::Ptr> objects;
+        vector<Material::Ptr> materials;
 
         Model();
-        ~Model();
 
         Model(const Model & other) = default;
 
@@ -63,10 +78,7 @@ namespace wavefront {
 
         Model & operator=(Model && other) = default;
 
-        void clear();
-
-        void loadMaterialsFrom(const string & path);
-
-        void loadModelFrom(const string & path);
+        static Ptr fromFile(const fs::path & path);
+        static Ptr fromStream(istream & is, const fs::path & basePath = "");
     };
 }

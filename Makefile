@@ -24,4 +24,12 @@ test: build
 test-ci: build
 	cd build && GTEST_COLOR=1 ctest -V
 
-.PHONY: setup build install lint format test test-ci
+test-cov: test coverage
+
+coverage:
+	cmake --build build --target Wavefront_coverage
+
+show_coverage:
+	gio open build/Wavefront_coverage/index.html
+
+.PHONY: setup build install lint format test test-ci test-cov coverage
