@@ -93,15 +93,6 @@ TEST(ParserTest, EOFHasNext) {
 
 TEST(ParserTest, EmptyStream) {
     istringstream is("");
-    EXPECT_EQ(-1, is.peek());
-}
-
-TEST(ParserTest, End) {
-    istringstream is("a");
-    char c;
-    is >> c;
-    EXPECT_FALSE(is.eof());
-    EXPECT_EQ('a', c);
-    is >> c;
-    EXPECT_TRUE(is.eof());
+    auto parser = wavefront::Parser(is);
+    EXPECT_EQ(parser.begin(), parser.end());
 }

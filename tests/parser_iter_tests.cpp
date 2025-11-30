@@ -23,6 +23,14 @@ TEST(ParserIterTest, Begin) {
     EXPECT_EQ(Parser::end(), ++iter);
 }
 
+TEST(ParserIterTest, Emtpy) {
+    istringstream is("");
+    auto parser = wavefront::Parser(is);
+    EXPECT_FALSE(parser.hasNext());
+    auto iter = parser.begin();
+    EXPECT_TRUE(iter == Parser::end());
+}
+
 TEST(ParserIterTest, End) {
     EXPECT_EQ(Parser::iterator(), Parser::end());
 }

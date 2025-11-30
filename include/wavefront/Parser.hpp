@@ -75,7 +75,12 @@ namespace wavefront {
 
             iterator(Parser * parser) : parser(parser) {
                 if (parser) {
-                    parser->read(token);
+                    if (parser->hasNext()) {
+                        parser->read(token);
+                    }
+                    else {
+                        this->parser = nullptr;
+                    }
                 }
             }
 
