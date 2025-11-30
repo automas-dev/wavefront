@@ -35,22 +35,20 @@ namespace wavefront {
         Material::Ptr material = nullptr;
 
         for (auto & token : parser) {
+            if (token.key == "newmtl") {
+                material = make_shared<Material>();
+                material->name = token.value;
+                materials.push_back(material);
+            }
+            else if (!material) {
+                throw MaterialLoadException("Got a token (" + token.key + ") before starting a material (newmtl)");
+            }
             switch (token.key[0]) {
-                case 'n': { // newmtl
-                    if (token.key != "newmtl")
-                        break;
-                    material = make_shared<Material>();
-                    material->name = token.value;
-                    materials.push_back(material);
-                } break;
                 case 'K': {
                     if (token.key.size() < 2)
                         break;
                     switch (token.key[1]) {
                         case 'a': { // Ka
-                            if (!material)
-                                throw MaterialLoadException(
-                                    "Got a Color ambient (Ka) before starting a material (newmtl)");
                             auto params = token.params();
                             if (params.size() != material->colAmbient.length())
                                 throw MaterialLoadException(
@@ -59,9 +57,6 @@ namespace wavefront {
                                 material->colAmbient[i] = std::stof(params[i]);
                         } break;
                         case 'd': { // Kd
-                            if (!material)
-                                throw MaterialLoadException(
-                                    "Got a Color diffuse (Kd) before starting a material (newmtl)");
                             auto params = token.params();
                             if (params.size() != material->colDiffuse.length())
                                 throw MaterialLoadException(
@@ -70,9 +65,6 @@ namespace wavefront {
                                 material->colDiffuse[i] = std::stof(params[i]);
                         } break;
                         case 's': { // Ks
-                            if (!material)
-                                throw MaterialLoadException(
-                                    "Got a Color specular (Ks) before starting a material (newmtl)");
                             auto params = token.params();
                             if (params.size() != material->colSpecular.length())
                                 throw MaterialLoadException(
@@ -153,12 +145,15 @@ namespace wavefront {
             shared_ptr<Mesh> mesh = nullptr;
 
             for (auto & token : parser) {
+                if (token.key == "o") {
+                    mesh = make_shared<Mesh>();
+                    mesh->name = token.value;
+                    model->objects.push_back(mesh);
+                }
+                else if (!mesh) {
+                    throw ModelLoadException("Got a token (" + token.key + ") before starting an object (o)");
+                }
                 switch (token.key[0]) {
-                    case 'o': {
-                        mesh = make_shared<Mesh>();
-                        mesh->name = token.value;
-                        model->objects.push_back(mesh);
-                    } break;
                     case 'v': {
                         if (token.key.size() == 1) { // v
                             auto & v = av.emplace_back();
@@ -195,9 +190,6 @@ namespace wavefront {
                         }
                     } break;
                     case 'f': {
-                        if (!mesh)
-                            throw ModelLoadException(
-                                "Got a face (f) before starting an object (o)");
                         auto params = token.params();
                         if (params.size() != 3)
                             throw ModelLoadException("Face (f) must have 3 components");
@@ -234,9 +226,6 @@ namespace wavefront {
                     case 'u': { // usemtl
                         if (token.key != "usemtl")
                             break;
-                        if (!mesh)
-                            throw ModelLoadException(
-                                "Got a (usemtl) before starting an object (o)");
                         bool found = false;
                         for (int i = 0; i < model->materials.size(); i++) {
                             if (model->materials[i]->name == token.value) {
