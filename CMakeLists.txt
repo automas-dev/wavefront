@@ -25,6 +25,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         if(WAVEFRONT_TEST_COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
             include(CodeCoverage)
             append_coverage_compiler_flags()
+            # Exclude branches/lines the compiler generates for exception unwinding
+            # (e.g. destructor cleanup paths that only run while an exception is
+            # already propagating, or closing braces used only as a landing pad
+            # for stack unwinding). These can't be hit by normal tests and would
+            # otherwise make 100% coverage unreachable.
+            set(GCOVR_ADDITIONAL_ARGS ${GCOVR_ADDITIONAL_ARGS} --exclude-throw-branches --exclude-unreachable-branches --exclude-noncode-lines)
             if(WAVEFRONT_TEST_COVERAGE_CAN_FAIL)
                 set(GCOVR_ADDITIONAL_ARGS ${GCOVR_ADDITIONAL_ARGS} --html-high-threshold 100 --html-medium-threshold 90 --fail-under-line 100 --fail-under-branch 100)
             endif()

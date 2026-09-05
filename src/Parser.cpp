@@ -45,7 +45,9 @@ namespace wavefront {
         if (parts.empty())
             parts.push_back(str);
 
-        else if (start <= str.size())
+        // start can never exceed str.size(): the loop only advances start to
+        // end+1 when end < str.size(), so this condition is always true.
+        else if (start <= str.size()) // GCOVR_EXCL_BR_LINE
             parts.push_back(str.substr(start));
 
         return parts;

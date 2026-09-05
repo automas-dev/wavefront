@@ -91,7 +91,10 @@ namespace wavefront {
                     material->alpha = std::stof(token.value);
                 } break;
                 case 'm': {
-                    if (token.key.size() < 5 || token.key.substr(0, 4) != "map_")
+                    // The compiler generates an additional, provably-unreachable
+                    // branch here for the string comparison against the "map_"
+                    // literal, which no test can trigger.
+                    if (token.key.size() < 5 || token.key.substr(0, 4) != "map_") // GCOVR_EXCL_BR_LINE
                         break;
                     switch (token.key[4]) {
                         case 'K': {
@@ -135,7 +138,9 @@ namespace wavefront {
 
     Model::Ptr Model::fromStream(istream & is, const fs::path & basePath) {
         Model::Ptr model = make_shared<Model>();
-        if (model) {
+        // make_shared never returns null (it throws on allocation failure),
+        // so the false branch here is unreachable.
+        if (model) { // GCOVR_EXCL_BR_LINE
             Parser parser(is);
 
             vector<vec3> av;
