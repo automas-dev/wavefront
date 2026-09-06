@@ -59,8 +59,9 @@ jobs:
   increment_version:
     name: Increment Version
     uses: automas-dev/reusable-workflows/.github/workflows/increment_version.yml@main
-    if: github.ref == 'refs/heads/main'
     secrets: inherit
+    with:
+      dry-run: ${{ github.ref != 'refs/heads/main' }}
 
     needs:
       - test
@@ -68,3 +69,17 @@ jobs:
 
     permissions:
       contents: write
+
+  check:
+    runs-on: ubuntu-latest
+    if: always()
+
+    needs:
+      - test
+      - lint
+      - increment_version
+
+    steps:
+      - uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
