@@ -45,7 +45,7 @@ namespace wavefront {
         if (parts.empty())
             parts.push_back(str);
 
-        else if (start <= str.size())
+        else
             parts.push_back(str.substr(start));
 
         return parts;

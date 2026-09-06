@@ -7,6 +7,9 @@ using namespace std;
 #include <wavefront/Wavefront.hpp>
 using namespace wavefront;
 
+#include "TestUtils.hpp"
+using wavefront_test::TempDir;
+
 TEST(MaterialTest, Init) {
     Material mat;
     EXPECT_FLOAT_EQ(1.0, mat.specExp);
@@ -30,6 +33,19 @@ TEST(MaterialTest, MultiMaterial) {
     ASSERT_EQ(2, mats.size());
     EXPECT_EQ("One", mats[0]->name);
     EXPECT_EQ("Two", mats[1]->name);
+}
+
+TEST(MaterialTest, FromFileMissing) {
+    TempDir dir;
+    EXPECT_THROW(Material::fromFile(dir.path / "missing.mtl"), MaterialLoadException);
+}
+
+TEST(MaterialTest, FromFileSuccess) {
+    TempDir dir;
+    auto path = dir.writeFile("mat.mtl", "newmtl FileMat\n");
+    auto mats = Material::fromFile(path);
+    ASSERT_EQ(1, mats.size());
+    EXPECT_EQ("FileMat", mats[0]->name);
 }
 
 TEST(MaterialTest, AttrErrorNoMaterial) {
@@ -77,6 +93,7 @@ TEST(MaterialTest, AllAtributes) {
         "m # m to short\n"
         "mapxx # m not map\n"
         "map_x # map wrong\n"
+        "map_Kx # map_K neither Kd nor Ks\n"
         "map_Kd tex_albedo.png\n"
         "map_Ks tex_spec.png\n"
         "map_bump tex_bump.png\n"

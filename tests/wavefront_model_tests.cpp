@@ -7,6 +7,9 @@ using namespace std;
 #include <wavefront/Wavefront.hpp>
 using namespace wavefront;
 
+#include "TestUtils.hpp"
+using wavefront_test::TempDir;
+
 TEST(ModelTest, Empty) {
     stringstream ss("");
     auto model = Model::fromStream(ss);
@@ -27,6 +30,29 @@ TEST(ModelTest, MultiModel) {
     ASSERT_EQ(2, model->objects.size());
     EXPECT_EQ("One", model->objects[0]->name);
     EXPECT_EQ("Two", model->objects[1]->name);
+}
+
+TEST(ModelTest, FromFileMissing) {
+    TempDir dir;
+    EXPECT_THROW(Model::fromFile(dir.path / "missing.obj"), ModelLoadException);
+}
+
+TEST(ModelTest, FromFileSuccess) {
+    TempDir dir;
+    dir.writeFile("model.mtl", "newmtl OtherMat\nnewmtl FileMat\n");
+    auto objPath = dir.writeFile(
+        "model.obj",
+        "o objName\n"
+        "mtllib model.mtl\n"
+        "usemtl FileMat\n"
+        "");
+    auto model = Model::fromFile(objPath);
+    ASSERT_NE(nullptr, model);
+    ASSERT_EQ(1, model->objects.size());
+    ASSERT_EQ(2, model->materials.size());
+    EXPECT_EQ("OtherMat", model->materials[0]->name);
+    EXPECT_EQ("FileMat", model->materials[1]->name);
+    EXPECT_EQ(1, model->objects[0]->matId);
 }
 
 TEST(ModelTest, AttrErrorTooSmall) {
@@ -124,6 +150,17 @@ TEST(ModelTest, UNotUseMtl) {
     stringstream ss(
         "o objName\n"
         "ux\n"
+        "");
+    auto model = Model::fromStream(ss);
+    ASSERT_NE(nullptr, model);
+    EXPECT_EQ(1, model->objects.size());
+    EXPECT_TRUE(model->materials.empty());
+}
+
+TEST(ModelTest, MNotMtllib) {
+    stringstream ss(
+        "o objName\n"
+        "mx\n"
         "");
     auto model = Model::fromStream(ss);
     ASSERT_NE(nullptr, model);

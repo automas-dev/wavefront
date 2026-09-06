@@ -65,3 +65,9 @@ TEST(SplitStringSpaceTest, MaxCount) {
     EXPECT_EQ("a", split[0]);
     EXPECT_EQ("b c", split[1]);
 }
+
+TEST(SplitStringSpaceTest, MaxCountTrailingWhitespace) {
+    auto split = wavefront::splitStringSpace("a   ", 1);
+    ASSERT_EQ(1, split.size());
+    EXPECT_EQ("a", split[0]);
+}
