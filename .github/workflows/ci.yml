@@ -30,12 +30,12 @@ jobs:
       - name: Build
         run: cmake --build build
 
-      - name: Test
-        working-directory: build
-        run: ctest -V
+      # - name: Test
+      #   working-directory: build
+      #   run: ctest -V
 
-      # - name: Test with Coverage
-      #   run: cmake --build build --target Wavefront_coverage
+      - name: Test with Coverage
+        run: cmake --build build --target Wavefront_coverage
 
   lint:
     runs-on: ubuntu-latest
